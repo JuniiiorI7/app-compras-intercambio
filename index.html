@@ -6,84 +6,102 @@
 <title>COMPRAS — Câmbio</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-/* CSS INTEGRAL MANTIDO PARA PRESERVAR O DESIGN ORIGINAL */
+/* ── VISUAL PADRÃO MANTIDO ────────────────────────────────────────────────── */
 :root {
   --bg: #0f0f0f; --surface: #1a1a1a; --surface2: #222; --border: #2e2e2e; --border2: #3a3a3a;
   --text: #f0f0f0; --text2: #999; --text3: #666; --accent: #f59e0b; --accent2: #d97706;
   --blue: #3b82f6; --green: #10b981; --red: #ef4444; --orange: #f97316;
   --radius: 8px; --radius-lg: 12px; --mono: 'IBM Plex Mono', monospace; --sans: 'IBM Plex Sans', sans-serif;
 }
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; }
-.app-header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
-.app-title { font-family: var(--mono); font-size: 15px; font-weight: 600; letter-spacing: 0.08em; color: var(--accent); display: flex; align-items: center; gap: 10px; }
-.btn-new { background: var(--accent); color: #000; border: none; border-radius: var(--radius); padding: 8px 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; }
-.tabs-wrap { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 20px; display: flex; gap: 2px; overflow-x: auto; }
-.tab-btn { padding: 12px 16px; border: none; background: transparent; color: var(--text2); font-size: 13px; font-weight: 500; cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap; }
-.tab-btn.active { color: var(--text); border-bottom-color: var(--accent); }
-.tab-count { font-size: 11px; padding: 2px 7px; border-radius: 20px; background: var(--surface2); color: var(--text2); margin-left: 5px; }
-.content { padding: 20px; max-width: 900px; margin: 0 auto; }
-.order-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px 16px; margin-bottom: 10px; border-left: 3px solid transparent; }
-.order-card.urg-hoje { border-left-color: var(--red); }
-.order-card.urg-urgente { border-left-color: var(--accent); }
-.order-card.urg-sem { border-left-color: var(--green); }
-.urg-badge { font-family: var(--mono); font-size: 10px; padding: 2px 8px; border-radius: 4px; margin-left: 10px; }
-.urg-badge.hoje { background: rgba(239,68,68,0.2); color: var(--red); }
-.urg-badge.urgente { background: rgba(245,158,11,0.2); color: var(--accent); }
-.urg-badge.sem { background: rgba(16,185,129,0.2); color: var(--green); }
-.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 200; align-items: center; justify-content: center; padding: 20px; }
-.modal-overlay.open { display: flex; }
-.modal { background: var(--surface); border-radius: var(--radius-lg); width: 100%; max-width: 500px; padding: 20px; }
-.field { margin-bottom: 14px; }
-.field label { display: block; font-size: 12px; color: var(--text2); margin-bottom: 5px; text-transform: uppercase; }
-.field input, .field select, .field textarea { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 9px 11px; color: var(--text); font-family: var(--sans); }
-.order-actions { display: flex; gap: 8px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
-.action-btn { background: none; border: 1px solid var(--border2); color: var(--text2); padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; }
-.action-btn.move { border-color: var(--blue); color: var(--blue); }
+*, *::before, *::after { box-sizing: border-box; }
+body { background: var(--bg); color: var(--text); font-family: var(--sans); margin: 0; padding: 0; line-height: 1.5; }
+.app-container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+.brand h1 { font-family: var(--mono); font-size: 1.5rem; margin: 0; }
+.brand h1 span { color: var(--accent); }
+.header-actions { display: flex; gap: 12px; }
+.btn { padding: 10px 20px; border-radius: var(--radius); border: none; font-family: var(--mono); font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s; }
+.btn-primary { background: var(--accent); color: #000; }
+.btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+.dashboard-grid { display: grid; grid-template-columns: 1fr 350px; gap: 24px; }
+@media (max-width: 900px) { .dashboard-grid { grid-template-columns: 1fr; } }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; }
+.tabs { display: flex; gap: 8px; margin-bottom: 20px; background: #111; padding: 4px; border-radius: 10px; }
+.tab-btn { flex: 1; padding: 8px; border-radius: 6px; border: none; background: transparent; color: var(--text3); font-family: var(--mono); cursor: pointer; }
+.tab-btn.active { background: var(--surface2); color: var(--text); }
+.order-item { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 12px; }
+.os-badge { font-family: var(--mono); color: var(--accent); background: rgba(245,158,11,0.1); padding: 2px 8px; border-radius: 4px; }
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 1000; }
+.modal-overlay.active { display: flex; }
+.modal-content { background: var(--surface); width: 95%; max-width: 600px; padding: 24px; border-radius: var(--radius-lg); border: 1px solid var(--border2); }
+.form-control { width: 100%; background: var(--bg); border: 1px solid var(--border2); color: var(--text); padding: 10px; border-radius: var(--radius); margin-bottom: 15px; }
 </style>
 </head>
 <body>
 
-<div class="app-header">
-  <div class="app-title">🔧 COMPRAS <span>/ Câmbio</span></div>
-  <button class="btn-new" id="btn-open-modal">+ Nova compra</button>
+<div class="app-container">
+  <header>
+    <div class="brand"><h1>COMPRAS <span>/ CÂMBIO</span></h1></div>
+    <div class="header-actions">
+      <button class="btn btn-secondary" onclick="openSettingsModal()" title="Gerenciar Nomes">⚙️</button>
+      <button class="btn btn-primary" onclick="openModal()">+ Novo Pedido</button>
+    </div>
+  </header>
+
+  <div class="dashboard-grid">
+    <main>
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('pendente', this)">PENDENTES <span id="badge-pendente">0</span></button>
+        <button class="tab-btn" onclick="switchTab('comprado', this)">COMPRADOS <span id="badge-comprado">0</span></button>
+        <button class="tab-btn" onclick="switchTab('finalizado', this)">FINALIZADOS <span id="badge-finalizado">0</span></button>
+      </div>
+      <div id="orders-container"></div>
+    </main>
+    <aside>
+        <div class="card">
+            <h3 style="font-family: var(--mono); font-size: 0.9rem; color: var(--text2); margin-bottom: 15px;">RESUMO DO SISTEMA</h3>
+            <div id="donut-legend"></div>
+        </div>
+    </aside>
+  </div>
 </div>
 
-<div class="tabs-wrap">
-  <button class="tab-btn active" data-tab="pendente">Pendente <span class="tab-count" id="cnt-pendente">0</span></button>
-  <button class="tab-btn" data-tab="comprado">Comprado <span class="tab-count" id="cnt-comprado">0</span></button>
-  <button class="tab-btn" data-tab="finalizado">Finalizado <span class="tab-count" id="cnt-finalizado">0</span></button>
-</div>
-
-<div class="content">
-  <div id="main-list"></div>
-</div>
-
-<div class="modal-overlay" id="modal-overlay">
-  <div class="modal">
-    <h2 style="margin-bottom:20px; font-family:var(--mono); font-size:16px; color:var(--accent)">REGISTRAR COMPRA</h2>
-    <div class="field"><label>N° O.S</label><input type="text" id="f-os" placeholder="Ex: 2026-001"></div>
-    <div class="field"><label>Solicitante</label><select id="f-solicitante"></select></div>
-    <div class="field"><label>Cliente</label><select id="f-cliente"></select></div>
-    <div class="field"><label>Urgência</label>
-      <select id="f-urgencia">
+<div id="modal-overlay" class="modal-overlay" onclick="closeModal(event)">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <h2 style="font-family: var(--mono); margin-bottom: 20px; color: var(--accent);">NOVA SOLICITAÇÃO</h2>
+    <input type="text" id="form-os" class="form-control" placeholder="Número da O.S.">
+    <label style="font-size: 0.7rem; color: var(--text2);">SOLICITANTE</label>
+    <select id="form-solicitante" class="form-control"></select>
+    <label style="font-size: 0.7rem; color: var(--text2);">CLIENTE</label>
+    <select id="form-cliente" class="form-control"></select>
+    <label style="font-size: 0.7rem; color: var(--text2);">URGÊNCIA</label>
+    <select id="form-urgency" class="form-control">
         <option value="URGENTE HOJE">🔴 URGENTE HOJE</option>
         <option value="URGENTE">🟡 URGENTE</option>
         <option value="SEM URGÊNCIA" selected>🟢 SEM URGÊNCIA</option>
-      </select>
-    </div>
-    <div class="field"><label>Valor (R$)</label><input type="number" id="f-valor" step="0.01" placeholder="0,00"></div>
-    
-    <button class="btn-new" id="btn-save" style="width:100%; justify-content:center; margin-top:10px;">Salvar no Firebase</button>
-    <button onclick="document.getElementById('modal-overlay').classList.remove('open')" style="width:100%; background:none; border:none; color:var(--text3); cursor:pointer; margin-top:10px; font-size:12px;">CANCELAR</button>
+    </select>
+    <input type="number" id="form-pecas" class="form-control" placeholder="Valor Total R$">
+    <button class="btn btn-primary" style="width:100%; margin-top:10px;" onclick="saveOrder()">SALVAR PEDIDO</button>
   </div>
+</div>
+
+<div id="settings-modal" class="modal-overlay" onclick="closeSettingsModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()" style="max-width: 450px;">
+      <h2 style="font-family: var(--mono); margin-bottom: 20px;">GERENCIAR NOMES</h2>
+      <select id="edit-list-type" onchange="renderEditList()" class="form-control">
+        <option value="solicitantes">Editar Solicitantes</option>
+        <option value="clientes">Editar Clientes</option>
+        <option value="fornecedores">Editar Fornecedores</option>
+      </select>
+      <div id="edit-list-container" style="max-height: 300px; overflow-y: auto; margin-bottom: 15px;"></div>
+      <button class="btn btn-secondary" style="width: 100%;" onclick="closeSettingsModal()">FECHAR</button>
+    </div>
 </div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
   import { getDatabase, ref, set, onValue, push, remove, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-  // Suas credenciais fornecidas
   const firebaseConfig = {
     apiKey: "AIzaSyCHUSjDVtoztWHaSkINsoI7EcYXoI1xt0o",
     authDomain: "compras-intercambio.firebaseapp.com",
@@ -97,111 +115,171 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
   const db = getDatabase(app);
 
   let orders = [];
-  let solicitantes = ["Eduardo", "Mecânico 1"]; // Valores iniciais
-  let clientes = ["Cliente Geral"];
+  let solicitantes = []; // ZERADO conforme pedido
+  let clientes = [];     // ZERADO conforme pedido
+  let fornecedores = []; // ZERADO conforme pedido
   let currentTab = 'pendente';
 
-  // --- CARREGAR DADOS EM TEMPO REAL ---
-  onValue(ref(db, 'compras/'), (snapshot) => {
+  // ── FIREBASE SYNC ────────────────────────────────────────────────────────
+  onValue(ref(db, 'compras_v2/'), (snapshot) => {
     const data = snapshot.val();
-    orders = data && data.pedidos ? Object.entries(data.pedidos).map(([id, val]) => ({ id, ...val })) : [];
-    if (data && data.listas) {
-        if(data.listas.solicitantes) solicitantes = data.listas.solicitantes;
-        if(data.listas.clientes) clientes = data.listas.clientes;
+    if (data) {
+      orders = data.pedidos ? Object.entries(data.pedidos).map(([id, val]) => ({ id, ...val })) : [];
+      solicitantes = data.listas?.solicitantes || [];
+      clientes = data.listas?.clientes || [];
+      fornecedores = data.listas?.fornecedores || [];
+      renderAll();
     }
-    renderList();
   });
 
-  // --- SALVAR NOVO ---
-  window.saveOrder = () => {
-    const os = document.getElementById('f-os').value;
-    const sol = document.getElementById('f-solicitante').value;
-    const cli = document.getElementById('f-cliente').value;
-    const urg = document.getElementById('f-urgencia').value;
-    const val = document.getElementById('f-valor').value;
-
-    if(!os) return alert("Digite a O.S!");
-
-    const novoPedido = {
-      os, solicitante: sol, cliente: cli, urgencia: urg, valor: val || 0,
-      status: 'pendente', dataCriacao: new Date().toLocaleDateString()
-    };
-
-    push(ref(db, 'compras/pedidos'), novoPedido);
-    document.getElementById('modal-overlay').classList.remove('open');
-  };
-
-  // --- MOVER STATUS ---
-  window.moveStatus = (id, novoStatus) => {
-    update(ref(db, `compras/pedidos/${id}`), { status: novoStatus });
-  };
-
-  // --- DELETAR ---
-  window.deleteOrder = (id) => {
-    if(confirm("Excluir este pedido permanentemente?")) {
-        remove(ref(db, `compras/pedidos/${id}`));
-    }
-  };
-
-  function renderList() {
-    const container = document.getElementById('main-list');
-    const filtered = orders.filter(o => o.status === currentTab);
-    
-    // Atualizar badges
-    document.getElementById('cnt-pendente').innerText = orders.filter(o => o.status === 'pendente').length;
-    document.getElementById('cnt-comprado').innerText = orders.filter(o => o.status === 'comprado').length;
-    document.getElementById('cnt-finalizado').innerText = orders.filter(o => o.status === 'finalizado').length;
-
-    container.innerHTML = filtered.map(o => {
-      const urgClass = o.urgencia === 'URGENTE HOJE' ? 'hoje' : o.urgencia === 'URGENTE' ? 'urgente' : 'sem';
-      return `
-        <div class="order-card urg-${urgClass}">
-          <div style="display:flex; justify-content:space-between; align-items:flex-start">
-            <div>
-                <div style="font-weight:600; font-size:14px">🚛 ${o.cliente} <span class="urg-badge ${urgClass}">${o.urgencia}</span></div>
-                <div style="font-size:12px; color:var(--text2); margin-top:4px">OS: ${o.os} | Sol: ${o.solicitante}</div>
-            </div>
-            <div style="text-align:right; font-family:var(--mono); color:var(--accent)">R$ ${parseFloat(o.valor).toLocaleString('pt-BR', {minimumFractionDigits:2})}</div>
-          </div>
-          <div class="order-actions">
-            ${currentTab === 'pendente' ? `<button class="action-btn move" onclick="moveStatus('${o.id}', 'comprado')">➔ COMPRADO</button>` : ''}
-            ${currentTab === 'comprado' ? `<button class="action-btn move" onclick="moveStatus('${o.id}', 'finalizado')">➔ FINALIZAR</button>` : ''}
-            <button class="action-btn" onclick="deleteOrder('${o.id}')">🗑️</button>
-          </div>
-        </div>
-      `;
-    }).join('') || '<p style="color:var(--text3); text-align:center; margin-top:20px;">Nenhum pedido nesta etapa.</p>';
+  function persistLists() {
+    set(ref(db, 'compras_v2/listas'), { solicitantes, clientes, fornecedores });
   }
 
-  // --- INTERFACE ---
-  document.getElementById('btn-open-modal').onclick = () => {
-    document.getElementById('modal-overlay').classList.add('open');
-    const fill = (id, list) => {
-        const el = document.getElementById(id);
-        el.innerHTML = list.map(v => `<option value="${v}">${v}</option>`).join('') + '<option value="ADD">+ Cadastrar Novo</option>';
-        el.onchange = () => {
-            if(el.value === 'ADD') {
-                const n = prompt("Nome:");
-                if(n) {
-                    list.push(n);
-                    set(ref(db, 'compras/listas'), { solicitantes, clientes });
-                    fill(id, list);
-                    el.value = n;
-                }
-            }
-        };
-    };
-    fill('f-solicitante', solicitantes);
-    fill('f-cliente', clientes);
+  // ── FUNÇÕES DE MODAL ─────────────────────────────────────────────────────
+  window.openModal = () => {
+    document.getElementById('modal-overlay').classList.add('active');
+    populateSelects();
+  };
+  window.closeModal = () => document.getElementById('modal-overlay').classList.remove('active');
+
+  window.openSettingsModal = () => {
+    document.getElementById('settings-modal').classList.add('active');
+    renderEditList();
+  };
+  window.closeSettingsModal = () => document.getElementById('settings-modal').classList.remove('active');
+
+  // ── GERENCIAMENTO DE NOMES ───────────────────────────────────────────────
+  window.renderEditList = () => {
+    const type = document.getElementById('edit-list-type').value;
+    const container = document.getElementById('edit-list-container');
+    const list = type === 'solicitantes' ? solicitantes : (type === 'clientes' ? clientes : fornecedores);
+
+    container.innerHTML = list.map((name, index) => `
+      <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+        <input type="text" class="form-control" value="${name}" onchange="updateName('${type}', ${index}, this.value)" style="margin-bottom:0;">
+        <button class="btn" onclick="deleteName('${type}', ${index})" style="background:#ef4444; color:white; padding:5px 12px;">🗑️</button>
+      </div>
+    `).join('') + `
+      <button class="btn btn-secondary" style="width:100%; margin-top:10px; border-style:dashed;" onclick="addNewName('${type}')">+ ADICIONAR NOVO</button>
+    `;
   };
 
-  document.getElementById('btn-save').onclick = window.saveOrder;
-  document.querySelectorAll('.tab-btn').forEach(b => b.onclick = () => {
-    document.querySelectorAll('.tab-btn').forEach(x => x.classList.remove('active'));
-    b.classList.add('active');
-    currentTab = b.dataset.tab;
-    renderList();
-  });
+  window.addNewName = (type) => {
+    const n = prompt("Novo nome:");
+    if(n) {
+        if(type === 'solicitantes') solicitantes.push(n);
+        if(type === 'clientes') clientes.push(n);
+        if(type === 'fornecedores') fornecedores.push(n);
+        persistLists();
+        renderEditList();
+    }
+  };
+
+  window.updateName = (type, index, val) => {
+    if(!val) return;
+    if(type === 'solicitantes') solicitantes[index] = val;
+    if(type === 'clientes') clientes[index] = val;
+    if(type === 'fornecedores') fornecedores[index] = val;
+    persistLists();
+  };
+
+  window.deleteName = (type, index) => {
+    if(confirm("Excluir nome da lista?")) {
+        if(type === 'solicitantes') solicitantes.splice(index, 1);
+        if(type === 'clientes') clientes.splice(index, 1);
+        if(type === 'fornecedores') fornecedores.splice(index, 1);
+        persistLists();
+        renderEditList();
+    }
+  };
+
+  // ── PEDIDOS ──────────────────────────────────────────────────────────────
+  window.saveOrder = () => {
+    const os = document.getElementById('form-os').value;
+    const sol = document.getElementById('form-solicitante').value;
+    const cli = document.getElementById('form-cliente').value;
+    const urg = document.getElementById('form-urgency').value;
+    const val = document.getElementById('form-pecas').value;
+
+    if(!os || sol === 'ADD') return alert("Preencha os campos corretamente.");
+
+    const newOrder = {
+      os, solicitante: sol, cliente: cli, urgencia: urg, valor: val || 0,
+      status: 'pendente', data: new Date().toLocaleDateString()
+    };
+
+    push(ref(db, 'compras_v2/pedidos'), newOrder);
+    closeModal();
+    document.getElementById('form-os').value = '';
+    document.getElementById('form-pecas').value = '';
+  };
+
+  window.moveOrder = (id, newStatus) => {
+    update(ref(db, `compras_v2/pedidos/${id}`), { status: newStatus });
+  };
+
+  window.deleteOrder = (id) => {
+    if(confirm("Apagar permanentemente?")) remove(ref(db, `compras_v2/pedidos/${id}`));
+  };
+
+  window.switchTab = (tab, btn) => {
+    currentTab = tab;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderOrders();
+  };
+
+  function populateSelects() {
+    const fill = (id, list) => {
+      const el = document.getElementById(id);
+      el.innerHTML = list.map(n => `<option value="${n}">${n}</option>`).join('') || '<option value="ADD">Cadastre na engrenagem ⚙️</option>';
+    };
+    fill('form-solicitante', solicitantes);
+    fill('form-cliente', clientes);
+  }
+
+  function renderOrders() {
+    const container = document.getElementById('orders-container');
+    const filtered = orders.filter(o => o.status === currentTab);
+
+    container.innerHTML = filtered.map(o => `
+      <div class="order-item">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+            <div>
+                <span class="os-badge">OS ${o.os}</span>
+                <span style="font-size:0.7rem; color:var(--text3); margin-left:10px;">${o.data}</span>
+                <div style="margin-top:8px; font-weight:600;">🚛 ${o.cliente}</div>
+                <div style="font-size:0.8rem; color:var(--text2);">Por: ${o.solicitante} · ${o.urgencia}</div>
+            </div>
+            <div style="text-align:right;">
+                <div style="color:var(--accent); font-family:var(--mono); font-weight:600;">R$ ${parseFloat(o.valor).toFixed(2)}</div>
+                <div style="margin-top:10px;">
+                    <button onclick="deleteOrder('${o.id}')" style="background:none; border:none; color:var(--red); cursor:pointer; margin-right:10px;">🗑️</button>
+                    ${o.status === 'pendente' ? `<button class="btn btn-secondary" style="padding:4px 10px; font-size:0.7rem;" onclick="moveOrder('${o.id}', 'comprado')">➔ COMPRADO</button>` : ''}
+                    ${o.status === 'comprado' ? `<button class="btn btn-primary" style="padding:4px 10px; font-size:0.7rem;" onclick="moveOrder('${o.id}', 'finalizado')">➔ FINALIZAR</button>` : ''}
+                </div>
+            </div>
+        </div>
+      </div>
+    `).join('') || '<p style="text-align:center; color:var(--text3); padding:20px;">Nada por aqui.</p>';
+  }
+
+  function renderAll() {
+    renderOrders();
+    document.getElementById('badge-pendente').innerText = orders.filter(o => o.status === 'pendente').length;
+    document.getElementById('badge-comprado').innerText = orders.filter(o => o.status === 'comprado').length;
+    document.getElementById('badge-finalizado').innerText = orders.filter(o => o.status === 'finalizado').length;
+    
+    document.getElementById('donut-legend').innerHTML = `
+        <div style="font-size:0.85rem; color:var(--text2); display:flex; justify-content:space-between; margin-bottom:5px;"><span>TOTAL PEDIDOS:</span> <b>${orders.length}</b></div>
+        <div style="height:4px; background:#333; border-radius:2px; overflow:hidden; display:flex;">
+            <div style="width:${(orders.filter(o => o.status === 'pendente').length/orders.length)*100}%; background:var(--accent)"></div>
+            <div style="width:${(orders.filter(o => o.status === 'comprado').length/orders.length)*100}%; background:var(--blue)"></div>
+            <div style="width:${(orders.filter(o => o.status === 'finalizado').length/orders.length)*100}%; background:var(--green)"></div>
+        </div>
+    `;
+  }
 </script>
 </body>
 </html>
