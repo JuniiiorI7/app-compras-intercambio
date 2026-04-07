@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COMPRAS — Câmbio</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* CSS INTEGRAL MANTIDO PARA PRESERVAR O DESIGN ORIGINAL */
+:root {
+  --bg: #0f0f0f; --surface: #1a1a1a; --surface2: #222; --border: #2e2e2e; --border2: #3a3a3a;
+  --text: #f0f0f0; --text2: #999; --text3: #666; --accent: #f59e0b; --accent2: #d97706;
+  --blue: #3b82f6; --green: #10b981; --red: #ef4444; --orange: #f97316;
+  --radius: 8px; --radius-lg: 12px; --mono: 'IBM Plex Mono', monospace; --sans: 'IBM Plex Sans', sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; }
+.app-header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
+.app-title { font-family: var(--mono); font-size: 15px; font-weight: 600; letter-spacing: 0.08em; color: var(--accent); display: flex; align-items: center; gap: 10px; }
+.btn-new { background: var(--accent); color: #000; border: none; border-radius: var(--radius); padding: 8px 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+.tabs-wrap { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 20px; display: flex; gap: 2px; overflow-x: auto; }
+.tab-btn { padding: 12px 16px; border: none; background: transparent; color: var(--text2); font-size: 13px; font-weight: 500; cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap; }
+.tab-btn.active { color: var(--text); border-bottom-color: var(--accent); }
+.tab-count { font-size: 11px; padding: 2px 7px; border-radius: 20px; background: var(--surface2); color: var(--text2); margin-left: 5px; }
+.content { padding: 20px; max-width: 900px; margin: 0 auto; }
+.order-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px 16px; margin-bottom: 10px; border-left: 3px solid transparent; }
+.order-card.urg-hoje { border-left-color: var(--red); }
+.order-card.urg-urgente { border-left-color: var(--accent); }
+.order-card.urg-sem { border-left-color: var(--green); }
+.urg-badge { font-family: var(--mono); font-size: 10px; padding: 2px 8px; border-radius: 4px; margin-left: 10px; }
+.urg-badge.hoje { background: rgba(239,68,68,0.2); color: var(--red); }
+.urg-badge.urgente { background: rgba(245,158,11,0.2); color: var(--accent); }
+.urg-badge.sem { background: rgba(16,185,129,0.2); color: var(--green); }
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 200; align-items: center; justify-content: center; padding: 20px; }
+.modal-overlay.open { display: flex; }
+.modal { background: var(--surface); border-radius: var(--radius-lg); width: 100%; max-width: 500px; padding: 20px; }
+.field { margin-bottom: 14px; }
+.field label { display: block; font-size: 12px; color: var(--text2); margin-bottom: 5px; text-transform: uppercase; }
+.field input, .field select, .field textarea { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 9px 11px; color: var(--text); font-family: var(--sans); }
+.order-actions { display: flex; gap: 8px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+.action-btn { background: none; border: 1px solid var(--border2); color: var(--text2); padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; }
+.action-btn.move { border-color: var(--blue); color: var(--blue); }
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <div class="app-title">🔧 COMPRAS <span>/ Câmbio</span></div>
+  <button class="btn-new" id="btn-open-modal">+ Nova compra</button>
+</div>
+
+<div class="tabs-wrap">
+  <button class="tab-btn active" data-tab="pendente">Pendente <span class="tab-count" id="cnt-pendente">0</span></button>
+  <button class="tab-btn" data-tab="comprado">Comprado <span class="tab-count" id="cnt-comprado">0</span></button>
+  <button class="tab-btn" data-tab="finalizado">Finalizado <span class="tab-count" id="cnt-finalizado">0</span></button>
+</div>
+
+<div class="content">
+  <div id="main-list"></div>
+</div>
+
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <h2 style="margin-bottom:20px; font-family:var(--mono); font-size:16px; color:var(--accent)">REGISTRAR COMPRA</h2>
+    <div class="field"><label>N° O.S</label><input type="text" id="f-os" placeholder="Ex: 2026-001"></div>
+    <div class="field"><label>Solicitante</label><select id="f-solicitante"></select></div>
+    <div class="field"><label>Cliente</label><select id="f-cliente"></select></div>
+    <div class="field"><label>Urgência</label>
+      <select id="f-urgencia">
+        <option value="URGENTE HOJE">🔴 URGENTE HOJE</option>
+        <option value="URGENTE">🟡 URGENTE</option>
+        <option value="SEM URGÊNCIA" selected>🟢 SEM URGÊNCIA</option>
+      </select>
+    </div>
+    <div class="field"><label>Valor (R$)</label><input type="number" id="f-valor" step="0.01" placeholder="0,00"></div>
+    
+    <button class="btn-new" id="btn-save" style="width:100%; justify-content:center; margin-top:10px;">Salvar no Firebase</button>
+    <button onclick="document.getElementById('modal-overlay').classList.remove('open')" style="width:100%; background:none; border:none; color:var(--text3); cursor:pointer; margin-top:10px; font-size:12px;">CANCELAR</button>
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getDatabase, ref, set, onValue, push, remove, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+  // Suas credenciais fornecidas
+  const firebaseConfig = {
+    apiKey: "AIzaSyCHUSjDVtoztWHaSkINsoI7EcYXoI1xt0o",
+    authDomain: "compras-intercambio.firebaseapp.com",
+    projectId: "compras-intercambio",
+    storageBucket: "compras-intercambio.firebasestorage.app",
+    messagingSenderId: "1007834002086",
+    appId: "1:1007834002086:web:d1e112adf5d16e1473ba67"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  let orders = [];
+  let solicitantes = ["Eduardo", "Mecânico 1"]; // Valores iniciais
+  let clientes = ["Cliente Geral"];
+  let currentTab = 'pendente';
+
+  // --- CARREGAR DADOS EM TEMPO REAL ---
+  onValue(ref(db, 'compras/'), (snapshot) => {
+    const data = snapshot.val();
+    orders = data && data.pedidos ? Object.entries(data.pedidos).map(([id, val]) => ({ id, ...val })) : [];
+    if (data && data.listas) {
+        if(data.listas.solicitantes) solicitantes = data.listas.solicitantes;
+        if(data.listas.clientes) clientes = data.listas.clientes;
+    }
+    renderList();
+  });
+
+  // --- SALVAR NOVO ---
+  window.saveOrder = () => {
+    const os = document.getElementById('f-os').value;
+    const sol = document.getElementById('f-solicitante').value;
+    const cli = document.getElementById('f-cliente').value;
+    const urg = document.getElementById('f-urgencia').value;
+    const val = document.getElementById('f-valor').value;
+
+    if(!os) return alert("Digite a O.S!");
+
+    const novoPedido = {
+      os, solicitante: sol, cliente: cli, urgencia: urg, valor: val || 0,
+      status: 'pendente', dataCriacao: new Date().toLocaleDateString()
+    };
+
+    push(ref(db, 'compras/pedidos'), novoPedido);
+    document.getElementById('modal-overlay').classList.remove('open');
+  };
+
+  // --- MOVER STATUS ---
+  window.moveStatus = (id, novoStatus) => {
+    update(ref(db, `compras/pedidos/${id}`), { status: novoStatus });
+  };
+
+  // --- DELETAR ---
+  window.deleteOrder = (id) => {
+    if(confirm("Excluir este pedido permanentemente?")) {
+        remove(ref(db, `compras/pedidos/${id}`));
+    }
+  };
+
+  function renderList() {
+    const container = document.getElementById('main-list');
+    const filtered = orders.filter(o => o.status === currentTab);
+    
+    // Atualizar badges
+    document.getElementById('cnt-pendente').innerText = orders.filter(o => o.status === 'pendente').length;
+    document.getElementById('cnt-comprado').innerText = orders.filter(o => o.status === 'comprado').length;
+    document.getElementById('cnt-finalizado').innerText = orders.filter(o => o.status === 'finalizado').length;
+
+    container.innerHTML = filtered.map(o => {
+      const urgClass = o.urgencia === 'URGENTE HOJE' ? 'hoje' : o.urgencia === 'URGENTE' ? 'urgente' : 'sem';
+      return `
+        <div class="order-card urg-${urgClass}">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start">
+            <div>
+                <div style="font-weight:600; font-size:14px">🚛 ${o.cliente} <span class="urg-badge ${urgClass}">${o.urgencia}</span></div>
+                <div style="font-size:12px; color:var(--text2); margin-top:4px">OS: ${o.os} | Sol: ${o.solicitante}</div>
+            </div>
+            <div style="text-align:right; font-family:var(--mono); color:var(--accent)">R$ ${parseFloat(o.valor).toLocaleString('pt-BR', {minimumFractionDigits:2})}</div>
+          </div>
+          <div class="order-actions">
+            ${currentTab === 'pendente' ? `<button class="action-btn move" onclick="moveStatus('${o.id}', 'comprado')">➔ COMPRADO</button>` : ''}
+            ${currentTab === 'comprado' ? `<button class="action-btn move" onclick="moveStatus('${o.id}', 'finalizado')">➔ FINALIZAR</button>` : ''}
+            <button class="action-btn" onclick="deleteOrder('${o.id}')">🗑️</button>
+          </div>
+        </div>
+      `;
+    }).join('') || '<p style="color:var(--text3); text-align:center; margin-top:20px;">Nenhum pedido nesta etapa.</p>';
+  }
+
+  // --- INTERFACE ---
+  document.getElementById('btn-open-modal').onclick = () => {
+    document.getElementById('modal-overlay').classList.add('open');
+    const fill = (id, list) => {
+        const el = document.getElementById(id);
+        el.innerHTML = list.map(v => `<option value="${v}">${v}</option>`).join('') + '<option value="ADD">+ Cadastrar Novo</option>';
+        el.onchange = () => {
+            if(el.value === 'ADD') {
+                const n = prompt("Nome:");
+                if(n) {
+                    list.push(n);
+                    set(ref(db, 'compras/listas'), { solicitantes, clientes });
+                    fill(id, list);
+                    el.value = n;
+                }
+            }
+        };
+    };
+    fill('f-solicitante', solicitantes);
+    fill('f-cliente', clientes);
+  };
+
+  document.getElementById('btn-save').onclick = window.saveOrder;
+  document.querySelectorAll('.tab-btn').forEach(b => b.onclick = () => {
+    document.querySelectorAll('.tab-btn').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    currentTab = b.dataset.tab;
+    renderList();
+  });
+</script>
+</body>
+</html>
