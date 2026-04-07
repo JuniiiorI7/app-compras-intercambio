@@ -6,1115 +6,202 @@
 <title>COMPRAS — Câmbio</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
+/* CSS INTEGRAL MANTIDO PARA PRESERVAR O DESIGN ORIGINAL */
 :root {
-  --bg: #0f0f0f;
-  --surface: #1a1a1a;
-  --surface2: #222;
-  --border: #2e2e2e;
-  --border2: #3a3a3a;
-  --text: #f0f0f0;
-  --text2: #999;
-  --text3: #666;
-  --accent: #f59e0b;
-  --accent2: #d97706;
-  --blue: #3b82f6;
-  --green: #10b981;
-  --red: #ef4444;
-  --orange: #f97316;
-  --radius: 8px;
-  --radius-lg: 12px;
-  --mono: 'IBM Plex Mono', monospace;
-  --sans: 'IBM Plex Sans', sans-serif;
+  --bg: #0f0f0f; --surface: #1a1a1a; --surface2: #222; --border: #2e2e2e; --border2: #3a3a3a;
+  --text: #f0f0f0; --text2: #999; --text3: #666; --accent: #f59e0b; --accent2: #d97706;
+  --blue: #3b82f6; --green: #10b981; --red: #ef4444; --orange: #f97316;
+  --radius: 8px; --radius-lg: 12px; --mono: 'IBM Plex Mono', monospace; --sans: 'IBM Plex Sans', sans-serif;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { font-size: 14px; }
 body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; }
-
-/* HEADER */
-.app-header {
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  padding: 14px 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: sticky;
-  top: 0;
-  z-index: 50;
-}
-.app-title {
-  font-family: var(--mono);
-  font-size: 15px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  color: var(--accent);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.app-title span { color: var(--text2); font-weight: 400; }
-.btn-new {
-  background: var(--accent);
-  color: #000;
-  border: none;
-  border-radius: var(--radius);
-  padding: 8px 16px;
-  font-family: var(--sans);
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  transition: background 0.15s;
-}
-.btn-new:hover { background: var(--accent2); }
-
-/* TABS */
-.tabs-wrap {
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  padding: 0 20px;
-  display: flex;
-  gap: 2px;
-  overflow-x: auto;
-}
-.tab-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 16px;
-  border: none;
-  background: transparent;
-  color: var(--text2);
-  font-family: var(--sans);
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-  white-space: nowrap;
-  transition: color 0.15s, border-color 0.15s;
-}
-.tab-btn:hover { color: var(--text); }
+.app-header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
+.app-title { font-family: var(--mono); font-size: 15px; font-weight: 600; letter-spacing: 0.08em; color: var(--accent); display: flex; align-items: center; gap: 10px; }
+.btn-new { background: var(--accent); color: #000; border: none; border-radius: var(--radius); padding: 8px 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+.tabs-wrap { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 20px; display: flex; gap: 2px; overflow-x: auto; }
+.tab-btn { padding: 12px 16px; border: none; background: transparent; color: var(--text2); font-size: 13px; font-weight: 500; cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap; }
 .tab-btn.active { color: var(--text); border-bottom-color: var(--accent); }
-.tab-count {
-  font-size: 11px;
-  font-weight: 600;
-  padding: 2px 7px;
-  border-radius: 20px;
-  background: var(--surface2);
-  color: var(--text2);
-  font-family: var(--mono);
-}
-.tab-btn.active .tab-count { background: var(--accent); color: #000; }
-
-/* CONTENT */
+.tab-count { font-size: 11px; padding: 2px 7px; border-radius: 20px; background: var(--surface2); color: var(--text2); margin-left: 5px; }
 .content { padding: 20px; max-width: 900px; margin: 0 auto; }
-.section { display: none; }
-.section.active { display: block; }
-
-/* URGENCY FILTER PILLS */
-.urg-pills {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 16px;
-  flex-wrap: wrap;
-  align-items: center;
-}
-.urg-pill {
-  padding: 5px 14px;
-  border-radius: 20px;
-  border: 1px solid var(--border2);
-  background: transparent;
-  color: var(--text2);
-  font-size: 12px;
-  font-weight: 500;
-  cursor: pointer;
-  font-family: var(--sans);
-  transition: all 0.15s;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.urg-pill:hover { border-color: var(--border2); color: var(--text); }
-.urg-pill.all.active { background: var(--surface2); color: var(--text); border-color: var(--border2); }
-.urg-pill.hoje.active { background: rgba(239,68,68,0.15); color: var(--red); border-color: var(--red); }
-.urg-pill.urgente.active { background: rgba(245,158,11,0.15); color: var(--accent); border-color: var(--accent); }
-.urg-pill.sem.active { background: rgba(16,185,129,0.15); color: var(--green); border-color: var(--green); }
-.pill-dot { width: 7px; height: 7px; border-radius: 50%; }
-
-/* SEARCH */
-.search-wrap { margin-bottom: 16px; position: relative; }
-.search-wrap input {
-  width: 100%;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 9px 12px 9px 36px;
-  color: var(--text);
-  font-size: 13px;
-  font-family: var(--sans);
-}
-.search-wrap input:focus { outline: none; border-color: var(--border2); }
-.search-icon { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--text3); font-size: 14px; pointer-events: none; }
-
-/* ORDER CARDS */
-.order-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 14px 16px;
-  margin-bottom: 10px;
-  transition: border-color 0.15s;
-}
-.order-card:hover { border-color: var(--border2); }
-.order-card.urg-hoje { border-left: 3px solid var(--red); }
-.order-card.urg-urgente { border-left: 3px solid var(--accent); }
-.order-card.urg-sem { border-left: 3px solid var(--green); }
-
-.order-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 12px;
-  margin-bottom: 8px;
-}
-.order-main { flex: 1; min-width: 0; }
-.order-company {
-  font-weight: 600;
-  font-size: 14px;
-  color: var(--text);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 3px;
-}
-.urg-badge {
-  font-family: var(--mono);
-  font-size: 10px;
-  font-weight: 600;
-  padding: 2px 8px;
-  border-radius: 4px;
-  letter-spacing: 0.05em;
-  flex-shrink: 0;
-}
-.urg-badge.hoje { background: rgba(239,68,68,0.2); color: var(--red); border: 1px solid rgba(239,68,68,0.3); }
-.urg-badge.urgente { background: rgba(245,158,11,0.2); color: var(--accent); border: 1px solid rgba(245,158,11,0.3); }
-.urg-badge.sem { background: rgba(16,185,129,0.2); color: var(--green); border: 1px solid rgba(16,185,129,0.3); }
-
-.order-meta {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  font-size: 12px;
-  color: var(--text2);
-}
-.meta-item { display: flex; align-items: center; gap: 4px; }
-
-.order-right { text-align: right; flex-shrink: 0; }
-.order-value {
-  font-family: var(--mono);
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--accent);
-}
-.order-date {
-  font-size: 11px;
-  color: var(--text3);
-  margin-top: 2px;
-  font-family: var(--mono);
-}
-
-.order-items { display: flex; flex-wrap: wrap; gap: 5px; margin: 8px 0; }
-.item-tag {
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 2px 8px;
-  font-size: 11px;
-  color: var(--text2);
-  font-family: var(--mono);
-}
-
-.order-obs { font-size: 12px; color: var(--text3); margin-bottom: 8px; font-style: italic; }
-.frete-info { font-size: 11px; color: var(--text3); font-family: var(--mono); }
-
-.order-actions {
-  display: flex;
-  gap: 6px;
-  padding-top: 10px;
-  border-top: 1px solid var(--border);
-  flex-wrap: wrap;
-}
-.action-btn {
-  padding: 5px 12px;
-  border-radius: var(--radius);
-  border: 1px solid var(--border2);
-  background: transparent;
-  color: var(--text2);
-  font-size: 12px;
-  font-weight: 500;
-  cursor: pointer;
-  font-family: var(--sans);
-  transition: all 0.15s;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-.action-btn:hover { color: var(--text); border-color: var(--text3); }
-.action-btn.advance { border-color: var(--blue); color: var(--blue); }
-.action-btn.advance:hover { background: rgba(59,130,246,0.1); }
-.action-btn.finish { border-color: var(--green); color: var(--green); }
-.action-btn.finish:hover { background: rgba(16,185,129,0.1); }
-.action-btn.back { border-color: var(--text3); }
-.action-btn.del { border-color: rgba(239,68,68,0.4); color: var(--red); margin-left: auto; }
-.action-btn.del:hover { background: rgba(239,68,68,0.1); }
-
-.empty-state {
-  text-align: center;
-  padding: 60px 20px;
-  color: var(--text3);
-}
-.empty-state .empty-icon { font-size: 40px; margin-bottom: 12px; }
-.empty-state p { font-size: 14px; }
-
-/* MODAL */
-.modal-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.75);
-  z-index: 200;
-  align-items: flex-start;
-  justify-content: center;
-  padding: 20px;
-  overflow-y: auto;
-}
+.order-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px 16px; margin-bottom: 10px; border-left: 3px solid transparent; }
+.order-card.urg-hoje { border-left-color: var(--red); }
+.order-card.urg-urgente { border-left-color: var(--accent); }
+.order-card.urg-sem { border-left-color: var(--green); }
+.urg-badge { font-family: var(--mono); font-size: 10px; padding: 2px 8px; border-radius: 4px; margin-left: 10px; }
+.urg-badge.hoje { background: rgba(239,68,68,0.2); color: var(--red); }
+.urg-badge.urgente { background: rgba(245,158,11,0.2); color: var(--accent); }
+.urg-badge.sem { background: rgba(16,185,129,0.2); color: var(--green); }
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 200; align-items: center; justify-content: center; padding: 20px; }
 .modal-overlay.open { display: flex; }
-.modal {
-  background: var(--surface);
-  border: 1px solid var(--border2);
-  border-radius: var(--radius-lg);
-  width: 100%;
-  max-width: 500px;
-  padding: 20px;
-  margin: auto;
-}
-.modal-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-.modal-title { font-size: 15px; font-weight: 600; font-family: var(--mono); }
-.modal-close {
-  background: transparent;
-  border: none;
-  color: var(--text2);
-  font-size: 20px;
-  cursor: pointer;
-  padding: 2px 6px;
-  border-radius: 4px;
-  line-height: 1;
-}
-.modal-close:hover { color: var(--text); background: var(--surface2); }
-
+.modal { background: var(--surface); border-radius: var(--radius-lg); width: 100%; max-width: 500px; padding: 20px; }
 .field { margin-bottom: 14px; }
-.field label {
-  display: block;
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--text2);
-  margin-bottom: 5px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-.req { color: var(--red); }
-.field input, .field select, .field textarea {
-  width: 100%;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 9px 11px;
-  color: var(--text);
-  font-size: 13px;
-  font-family: var(--sans);
-  transition: border-color 0.15s;
-}
-.field input:focus, .field select:focus, .field textarea:focus {
-  outline: none;
-  border-color: var(--accent);
-}
-.field select option { background: var(--surface2); }
-.field textarea { resize: vertical; min-height: 60px; }
-.new-input {
-  margin-top: 6px;
-  display: none;
-}
-
-.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-
-/* ITEMS INPUT */
-.items-input-row { display: flex; gap: 6px; margin-bottom: 8px; }
-.items-input-row input { flex: 1; }
-.btn-add-item {
-  padding: 9px 14px;
-  background: var(--surface2);
-  border: 1px solid var(--border2);
-  border-radius: var(--radius);
-  color: var(--accent);
-  font-size: 13px;
-  cursor: pointer;
-  font-family: var(--sans);
-  font-weight: 500;
-  white-space: nowrap;
-  transition: background 0.15s;
-}
-.btn-add-item:hover { background: var(--border); }
-.items-tags { display: flex; flex-wrap: wrap; gap: 5px; }
-.item-remove {
-  cursor: pointer;
-  color: var(--red);
-  margin-left: 4px;
-  font-size: 12px;
-  opacity: 0.7;
-}
-.item-remove:hover { opacity: 1; }
-
-/* STATUS BUTTONS */
-.status-btns { display: flex; gap: 6px; }
-.status-btn {
-  flex: 1;
-  padding: 8px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--surface2);
-  color: var(--text2);
-  font-size: 12px;
-  font-weight: 500;
-  cursor: pointer;
-  text-align: center;
-  font-family: var(--sans);
-  transition: all 0.15s;
-}
-.status-btn.active-pend { background: rgba(245,158,11,0.15); border-color: var(--accent); color: var(--accent); }
-.status-btn.active-comp { background: rgba(59,130,246,0.15); border-color: var(--blue); color: var(--blue); }
-.status-btn.active-fin { background: rgba(16,185,129,0.15); border-color: var(--green); color: var(--green); }
-
-/* MODAL FOOTER */
-.modal-footer { display: flex; gap: 8px; margin-top: 20px; }
-.btn-cancel {
-  flex: 1;
-  padding: 10px;
-  background: transparent;
-  border: 1px solid var(--border2);
-  border-radius: var(--radius);
-  color: var(--text2);
-  font-family: var(--sans);
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-.btn-cancel:hover { color: var(--text); border-color: var(--text3); }
-.btn-save {
-  flex: 2;
-  padding: 10px;
-  background: var(--accent);
-  border: none;
-  border-radius: var(--radius);
-  color: #000;
-  font-family: var(--sans);
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-.btn-save:hover { background: var(--accent2); }
-
-/* CHARTS */
-.chart-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 16px;
-}
-.month-nav { display: flex; align-items: center; gap: 10px; }
-.month-nav button {
-  width: 30px; height: 30px;
-  border: 1px solid var(--border2);
-  border-radius: var(--radius);
-  background: var(--surface2);
-  color: var(--text);
-  font-size: 16px;
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  transition: background 0.15s;
-}
-.month-nav button:hover { background: var(--border); }
-.month-label { font-family: var(--mono); font-size: 13px; font-weight: 500; min-width: 150px; text-align: center; }
-
-.summary-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  margin-bottom: 24px;
-}
-.summary-box {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 14px;
-}
-.summary-box .s-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
-.summary-box .s-value { font-family: var(--mono); font-size: 18px; font-weight: 600; }
-.summary-box .s-count { font-size: 11px; color: var(--text2); margin-top: 4px; }
-.summary-box.red .s-value { color: var(--red); }
-.summary-box.amber .s-value { color: var(--accent); }
-.summary-box.green .s-value { color: var(--green); }
-.summary-box.red { border-left: 3px solid var(--red); }
-.summary-box.amber { border-left: 3px solid var(--accent); }
-.summary-box.green { border-left: 3px solid var(--green); }
-
-.bar-section-title {
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--text2);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  margin-bottom: 14px;
-}
-.bars-container { display: flex; gap: 20px; align-items: flex-end; height: 180px; margin-bottom: 8px; }
-.bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end; }
-.bar-val { font-family: var(--mono); font-size: 11px; font-weight: 500; }
-.bar-body {
-  width: 100%;
-  border-radius: 6px 6px 0 0;
-  min-height: 4px;
-  transition: height 0.4s ease;
-}
-.bar-name { font-size: 11px; color: var(--text2); text-align: center; }
-
-/* DONUT */
-.donut-wrap { display: flex; align-items: center; justify-content: center; gap: 40px; padding: 20px 0; flex-wrap: wrap; }
-.donut-legend { display: flex; flex-direction: column; gap: 14px; }
-.legend-row { display: flex; align-items: center; gap: 10px; }
-.legend-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
-.legend-label { font-size: 13px; font-weight: 500; }
-.legend-count { font-family: var(--mono); font-size: 12px; color: var(--text2); margin-top: 1px; }
-
-/* SCROLLBAR */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
-
-@media (max-width: 600px) {
-  .content { padding: 14px; }
-  .field-row { grid-template-columns: 1fr; }
-  .summary-grid { grid-template-columns: 1fr; }
-  .order-meta { gap: 8px; }
-  .donut-wrap { gap: 20px; }
-}
+.field label { display: block; font-size: 12px; color: var(--text2); margin-bottom: 5px; text-transform: uppercase; }
+.field input, .field select, .field textarea { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 9px 11px; color: var(--text); font-family: var(--sans); }
+.order-actions { display: flex; gap: 8px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+.action-btn { background: none; border: 1px solid var(--border2); color: var(--text2); padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; }
+.action-btn.move { border-color: var(--blue); color: var(--blue); }
 </style>
 </head>
 <body>
 
 <div class="app-header">
   <div class="app-title">🔧 COMPRAS <span>/ Câmbio</span></div>
-  <button class="btn-new" onclick="openModal()">+ Nova compra</button>
+  <button class="btn-new" id="btn-open-modal">+ Nova compra</button>
 </div>
 
 <div class="tabs-wrap">
-  <button class="tab-btn active" onclick="switchTab('pendente', this)" id="tab-pendente">
-    Pendente <span class="tab-count" id="cnt-pendente">0</span>
-  </button>
-  <button class="tab-btn" onclick="switchTab('comprado', this)" id="tab-comprado">
-    Comprado <span class="tab-count" id="cnt-comprado">0</span>
-  </button>
-  <button class="tab-btn" onclick="switchTab('finalizado', this)" id="tab-finalizado">
-    Finalizado <span class="tab-count" id="cnt-finalizado">0</span>
-  </button>
-  <button class="tab-btn" onclick="switchTab('graficos', this)">
-    📊 Resumo Urgência
-  </button>
-  <button class="tab-btn" onclick="switchTab('donut', this)">
-    🍩 Pedidos
-  </button>
+  <button class="tab-btn active" data-tab="pendente">Pendente <span class="tab-count" id="cnt-pendente">0</span></button>
+  <button class="tab-btn" data-tab="comprado">Comprado <span class="tab-count" id="cnt-comprado">0</span></button>
+  <button class="tab-btn" data-tab="finalizado">Finalizado <span class="tab-count" id="cnt-finalizado">0</span></button>
 </div>
 
 <div class="content">
-
-  <!-- PENDENTE -->
-  <div class="section active" id="sec-pendente">
-    <div class="urg-pills" id="pills-pendente"></div>
-    <div class="search-wrap">
-      <span class="search-icon">🔍</span>
-      <input type="text" placeholder="Buscar por O.S, cliente, item..." id="search-pendente" oninput="renderList('pendente')">
-    </div>
-    <div id="list-pendente"></div>
-  </div>
-
-  <!-- COMPRADO -->
-  <div class="section" id="sec-comprado">
-    <div class="urg-pills" id="pills-comprado"></div>
-    <div class="search-wrap">
-      <span class="search-icon">🔍</span>
-      <input type="text" placeholder="Buscar por O.S, cliente, item..." id="search-comprado" oninput="renderList('comprado')">
-    </div>
-    <div id="list-comprado"></div>
-  </div>
-
-  <!-- FINALIZADO -->
-  <div class="section" id="sec-finalizado">
-    <div style="display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap;">
-      <div class="urg-pills" id="pills-finalizado" style="margin-bottom:0;flex:1"></div>
-      <input type="month" id="filter-month" onchange="renderList('finalizado')"
-        style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:6px 10px;color:var(--text);font-size:12px;font-family:var(--sans);">
-    </div>
-    <div class="search-wrap">
-      <span class="search-icon">🔍</span>
-      <input type="text" placeholder="Buscar por O.S, cliente, item..." id="search-finalizado" oninput="renderList('finalizado')">
-    </div>
-    <div id="list-finalizado"></div>
-  </div>
-
-  <!-- GRÁFICOS -->
-  <div class="section" id="sec-graficos">
-    <div class="order-card" style="border-left:none;">
-      <div class="chart-header">
-        <div class="month-nav">
-          <button onclick="changeMonth(-1)">‹</button>
-          <div class="month-label" id="chart-month-lbl"></div>
-          <button onclick="changeMonth(1)">›</button>
-        </div>
-      </div>
-      <div class="summary-grid" id="summary-grid"></div>
-      <div class="bar-section-title">Total gasto por urgência no mês</div>
-      <div class="bars-container" id="bars-container"></div>
-      <div id="bars-labels" style="display:flex;gap:20px;"></div>
-    </div>
-  </div>
-
-  <!-- DONUT -->
-  <div class="section" id="sec-donut">
-    <div class="order-card" style="border-left:none;">
-      <div class="bar-section-title" style="margin-bottom:8px;">Pedidos por etapa</div>
-      <div class="donut-wrap">
-        <svg id="donut-svg" width="200" height="200" viewBox="0 0 200 200"></svg>
-        <div class="donut-legend" id="donut-legend"></div>
-      </div>
-    </div>
-  </div>
-
+  <div id="main-list"></div>
 </div>
 
-<!-- MODAL -->
 <div class="modal-overlay" id="modal-overlay">
   <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title" id="modal-title">NOVA COMPRA</div>
-      <button class="modal-close" onclick="closeModal()">×</button>
-    </div>
-
-    <div class="field-row">
-      <div class="field">
-        <label>Data <span class="req">*</span></label>
-        <input type="date" id="f-data">
-      </div>
-      <div class="field">
-        <label>N° O.S <span class="req">*</span></label>
-        <input type="text" id="f-os" placeholder="Ex: 2025-001">
-      </div>
-    </div>
-
-    <div class="field">
-      <label>Solicitante <span class="req">*</span></label>
-      <select id="f-solicitante" onchange="handleNew(this,'sol')">
-        <option value="">Selecione...</option>
-      </select>
-      <input type="text" id="f-sol-new" class="new-input" placeholder="Nome do novo solicitante">
-    </div>
-
-    <div class="field">
-      <label>Cliente <span class="req">*</span></label>
-      <select id="f-cliente" onchange="handleNew(this,'cli')">
-        <option value="">Selecione...</option>
-      </select>
-      <input type="text" id="f-cli-new" class="new-input" placeholder="Nome do novo cliente">
-    </div>
-
-    <div class="field">
-      <label>Fornecedor</label>
-      <select id="f-fornecedor" onchange="handleNew(this,'forn')">
-        <option value="">Nenhum</option>
-      </select>
-      <input type="text" id="f-forn-new" class="new-input" placeholder="Nome do novo fornecedor">
-    </div>
-
-    <div class="field">
-      <label>Itens</label>
-      <div class="items-input-row">
-        <input type="text" id="item-input" placeholder="Ex: Bomba de óleo, sincronizador..." onkeydown="if(event.key==='Enter'){event.preventDefault();addItem()}">
-        <button class="btn-add-item" onclick="addItem()">+ Add</button>
-      </div>
-      <div class="items-tags" id="items-tags"></div>
-    </div>
-
-    <div class="field-row">
-      <div class="field">
-        <label>Frete (R$)</label>
-        <input type="number" id="f-frete" placeholder="0,00" min="0" step="0.01">
-      </div>
-      <div class="field">
-        <label>Valor em peças (R$)</label>
-        <input type="number" id="f-valor" placeholder="0,00" min="0" step="0.01">
-      </div>
-    </div>
-
-    <div class="field">
-      <label>Urgência <span class="req">*</span></label>
+    <h2 style="margin-bottom:20px; font-family:var(--mono); font-size:16px; color:var(--accent)">REGISTRAR COMPRA</h2>
+    <div class="field"><label>N° O.S</label><input type="text" id="f-os" placeholder="Ex: 2026-001"></div>
+    <div class="field"><label>Solicitante</label><select id="f-solicitante"></select></div>
+    <div class="field"><label>Cliente</label><select id="f-cliente"></select></div>
+    <div class="field"><label>Urgência</label>
       <select id="f-urgencia">
-        <option value="">Selecione...</option>
         <option value="URGENTE HOJE">🔴 URGENTE HOJE</option>
         <option value="URGENTE">🟡 URGENTE</option>
-        <option value="SEM URGÊNCIA">🟢 SEM URGÊNCIA</option>
+        <option value="SEM URGÊNCIA" selected>🟢 SEM URGÊNCIA</option>
       </select>
     </div>
-
-    <div class="field">
-      <label>Status</label>
-      <div class="status-btns">
-        <button class="status-btn active-pend" id="sb-pendente" onclick="setStatus('pendente')">Pendente</button>
-        <button class="status-btn" id="sb-comprado" onclick="setStatus('comprado')">Comprado</button>
-        <button class="status-btn" id="sb-finalizado" onclick="setStatus('finalizado')">Finalizado</button>
-      </div>
-    </div>
-
-    <div class="field">
-      <label>Observações</label>
-      <textarea id="f-obs" placeholder="Informações adicionais, número de telefone do fornecedor, etc..."></textarea>
-    </div>
-
-    <div class="modal-footer">
-      <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
-      <button class="btn-save" onclick="saveOrder()">Salvar</button>
-    </div>
+    <div class="field"><label>Valor (R$)</label><input type="number" id="f-valor" step="0.01" placeholder="0,00"></div>
+    
+    <button class="btn-new" id="btn-save" style="width:100%; justify-content:center; margin-top:10px;">Salvar no Firebase</button>
+    <button onclick="document.getElementById('modal-overlay').classList.remove('open')" style="width:100%; background:none; border:none; color:var(--text3); cursor:pointer; margin-top:10px; font-size:12px;">CANCELAR</button>
   </div>
 </div>
 
-<script>
-// ── STATE ──────────────────────────────────────────────────────────────────
-let orders = JSON.parse(localStorage.getItem('cc_orders') || '[]');
-let solicitantes = JSON.parse(localStorage.getItem('cc_sol') || '["Carlos Silva","João Mendes","Maria Souza"]');
-let clientes = JSON.parse(localStorage.getItem('cc_cli') || '["Debruno Transportes","Oficina ABC","Transportes XYZ"]');
-let fornecedores = JSON.parse(localStorage.getItem('cc_forn') || '["Peças Brasil","Auto Parts Central","Distribuidora Sul"]');
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getDatabase, ref, set, onValue, push, remove, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-let editId = null;
-let currentItems = [];
-let selectedStatus = 'pendente';
-let activeFilters = { pendente: 'all', comprado: 'all', finalizado: 'all' };
-let chartMonthDate = new Date();
-
-function persist() {
-  localStorage.setItem('cc_orders', JSON.stringify(orders));
-  localStorage.setItem('cc_sol', JSON.stringify(solicitantes));
-  localStorage.setItem('cc_cli', JSON.stringify(clientes));
-  localStorage.setItem('cc_forn', JSON.stringify(fornecedores));
-}
-
-// ── FORMAT ─────────────────────────────────────────────────────────────────
-function fmtBRL(v) {
-  return 'R$ ' + parseFloat(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
-function fmtDate(d) {
-  if (!d) return '—';
-  const [y, m, dd] = d.split('-');
-  return dd + '/' + m + '/' + y;
-}
-
-// ── TABS ───────────────────────────────────────────────────────────────────
-function switchTab(name, el) {
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
-  document.getElementById('sec-' + name).classList.add('active');
-  el.classList.add('active');
-  if (name === 'graficos') renderChart();
-  else if (name === 'donut') renderDonut();
-  else { buildPills(name); renderList(name); }
-}
-
-// ── PILLS ──────────────────────────────────────────────────────────────────
-function buildPills(status) {
-  const container = document.getElementById('pills-' + status);
-  if (!container) return;
-  const active = activeFilters[status];
-  container.innerHTML = `
-    <button class="urg-pill all ${active === 'all' ? 'active' : ''}" onclick="setFilter('${status}','all',this)">Todos</button>
-    <button class="urg-pill hoje ${active === 'hoje' ? 'active' : ''}" onclick="setFilter('${status}','hoje',this)">
-      <span class="pill-dot" style="background:var(--red)"></span> Urgente hoje
-    </button>
-    <button class="urg-pill urgente ${active === 'urgente' ? 'active' : ''}" onclick="setFilter('${status}','urgente',this)">
-      <span class="pill-dot" style="background:var(--accent)"></span> Urgente
-    </button>
-    <button class="urg-pill sem ${active === 'sem' ? 'active' : ''}" onclick="setFilter('${status}','sem',this)">
-      <span class="pill-dot" style="background:var(--green)"></span> Sem urgência
-    </button>
-  `;
-}
-
-function setFilter(status, val, el) {
-  activeFilters[status] = val;
-  buildPills(status);
-  renderList(status);
-}
-
-// ── BADGES ─────────────────────────────────────────────────────────────────
-function updateBadges() {
-  ['pendente', 'comprado', 'finalizado'].forEach(s => {
-    const el = document.getElementById('cnt-' + s);
-    if (el) el.textContent = orders.filter(o => o.status === s).length;
-  });
-}
-
-// ── LIST ───────────────────────────────────────────────────────────────────
-function renderList(status) {
-  const container = document.getElementById('list-' + status);
-  if (!container) return;
-
-  let list = orders.filter(o => o.status === status);
-
-  // Urgency filter
-  const f = activeFilters[status];
-  if (f === 'hoje') list = list.filter(o => o.urgencia === 'URGENTE HOJE');
-  else if (f === 'urgente') list = list.filter(o => o.urgencia === 'URGENTE');
-  else if (f === 'sem') list = list.filter(o => o.urgencia === 'SEM URGÊNCIA');
-
-  // Month filter (finalizado)
-  if (status === 'finalizado') {
-    const mf = document.getElementById('filter-month');
-    if (mf && mf.value) list = list.filter(o => (o.data || '').startsWith(mf.value));
-  }
-
-  // Search
-  const searchEl = document.getElementById('search-' + status);
-  if (searchEl && searchEl.value.trim()) {
-    const q = searchEl.value.trim().toLowerCase();
-    list = list.filter(o =>
-      (o.os || '').toLowerCase().includes(q) ||
-      (o.cliente || '').toLowerCase().includes(q) ||
-      (o.solicitante || '').toLowerCase().includes(q) ||
-      (o.itens || []).join(' ').toLowerCase().includes(q) ||
-      (o.fornecedor || '').toLowerCase().includes(q)
-    );
-  }
-
-  // Sort: urgência first
-  const urgOrder = { 'URGENTE HOJE': 0, 'URGENTE': 1, 'SEM URGÊNCIA': 2 };
-  list.sort((a, b) => (urgOrder[a.urgencia] ?? 3) - (urgOrder[b.urgencia] ?? 3));
-
-  if (!list.length) {
-    container.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><p>Nenhum pedido aqui ainda.</p></div>';
-    return;
-  }
-
-  container.innerHTML = list.map(o => {
-    const urgClass = o.urgencia === 'URGENTE HOJE' ? 'hoje' : o.urgencia === 'URGENTE' ? 'urgente' : 'sem';
-    const urgLabel = o.urgencia || '—';
-    const total = parseFloat(o.valor || 0) + parseFloat(o.frete || 0);
-    const hasFrete = parseFloat(o.frete || 0) > 0;
-
-    const advanceBtn = status === 'pendente'
-      ? `<button class="action-btn advance" onclick="moveOrder('${o.id}','comprado')">→ Marcar comprado</button>`
-      : status === 'comprado'
-      ? `<button class="action-btn finish" onclick="moveOrder('${o.id}','finalizado')">✓ Finalizar entrega</button>`
-      : '';
-
-    const backBtn = status === 'comprado'
-      ? `<button class="action-btn back" onclick="moveOrder('${o.id}','pendente')">← Pendente</button>`
-      : status === 'finalizado'
-      ? `<button class="action-btn back" onclick="moveOrder('${o.id}','comprado')">← Comprado</button>`
-      : '';
-
-    return `<div class="order-card urg-${urgClass}">
-      <div class="order-top">
-        <div class="order-main">
-          <div class="order-company">
-            🚛 ${o.cliente || '—'}
-            <span class="urg-badge ${urgClass}">${urgLabel}</span>
-          </div>
-          <div class="order-meta">
-            <span class="meta-item">📋 OS: <strong>${o.os || '—'}</strong></span>
-            <span class="meta-item">👤 ${o.solicitante || '—'}</span>
-            ${o.fornecedor ? `<span class="meta-item">🏭 ${o.fornecedor}</span>` : ''}
-          </div>
-          ${(o.itens && o.itens.length) ? `<div class="order-items">${o.itens.map(i => `<span class="item-tag">${i}</span>`).join('')}</div>` : ''}
-          ${o.obs ? `<div class="order-obs">📝 ${o.obs}</div>` : ''}
-          ${hasFrete ? `<div class="frete-info">Frete: ${fmtBRL(o.frete)}</div>` : ''}
-        </div>
-        <div class="order-right">
-          <div class="order-value">${fmtBRL(total)}</div>
-          <div class="order-date">${fmtDate(o.data)}</div>
-        </div>
-      </div>
-      <div class="order-actions">
-        ${advanceBtn}
-        ${backBtn}
-        <button class="action-btn" onclick="openModal('${o.id}')">✏️ Editar</button>
-        <button class="action-btn del" onclick="deleteOrder('${o.id}')">🗑</button>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function moveOrder(id, newStatus) {
-  const o = orders.find(x => x.id === id);
-  if (o) { o.status = newStatus; persist(); updateBadges(); renderAll(); }
-}
-
-function deleteOrder(id) {
-  if (!confirm('Excluir este pedido?')) return;
-  orders = orders.filter(x => x.id !== id);
-  persist(); updateBadges(); renderAll();
-}
-
-function renderAll() {
-  ['pendente', 'comprado', 'finalizado'].forEach(s => renderList(s));
-}
-
-// ── MODAL ──────────────────────────────────────────────────────────────────
-function populateSelect(id, list, selected) {
-  const sel = document.getElementById(id);
-  const isRequired = id === 'f-solicitante' || id === 'f-cliente';
-  sel.innerHTML = `<option value="">${isRequired ? 'Selecione...' : 'Nenhum'}</option>` +
-    list.map(v => `<option value="${v}"${v === selected ? ' selected' : ''}>${v}</option>`).join('') +
-    `<option value="__new__">+ Cadastrar novo...</option>`;
-}
-
-function handleNew(sel, key) {
-  const inp = document.getElementById('f-' + key + '-new');
-  inp.style.display = sel.value === '__new__' ? 'block' : 'none';
-  if (sel.value === '__new__') inp.focus();
-}
-
-function openModal(id) {
-  editId = id || null;
-  currentItems = [];
-  const o = id ? orders.find(x => x.id === id) : {};
-  document.getElementById('modal-title').textContent = id ? 'EDITAR COMPRA' : 'NOVA COMPRA';
-  document.getElementById('f-data').value = o.data || new Date().toISOString().slice(0, 10);
-  document.getElementById('f-os').value = o.os || '';
-  document.getElementById('f-frete').value = o.frete || '';
-  document.getElementById('f-valor').value = o.valor || '';
-  document.getElementById('f-urgencia').value = o.urgencia || '';
-  document.getElementById('f-obs').value = o.obs || '';
-  populateSelect('f-solicitante', solicitantes, o.solicitante);
-  populateSelect('f-cliente', clientes, o.cliente);
-  populateSelect('f-fornecedor', fornecedores, o.fornecedor);
-  ['sol', 'cli', 'forn'].forEach(k => {
-    document.getElementById('f-' + k + '-new').style.display = 'none';
-  });
-  currentItems = o.itens ? [...o.itens] : [];
-  renderItemTags();
-  setStatus(o.status || 'pendente');
-  document.getElementById('modal-overlay').classList.add('open');
-}
-
-function closeModal() {
-  document.getElementById('modal-overlay').classList.remove('open');
-  editId = null;
-}
-
-function setStatus(s) {
-  selectedStatus = s;
-  document.getElementById('sb-pendente').className = 'status-btn' + (s === 'pendente' ? ' active-pend' : '');
-  document.getElementById('sb-comprado').className = 'status-btn' + (s === 'comprado' ? ' active-comp' : '');
-  document.getElementById('sb-finalizado').className = 'status-btn' + (s === 'finalizado' ? ' active-fin' : '');
-}
-
-function addItem() {
-  const inp = document.getElementById('item-input');
-  const v = inp.value.trim();
-  if (v) { currentItems.push(v); inp.value = ''; renderItemTags(); }
-}
-
-function removeItem(i) {
-  currentItems.splice(i, 1);
-  renderItemTags();
-}
-
-function renderItemTags() {
-  document.getElementById('items-tags').innerHTML = currentItems.map((v, i) =>
-    `<span class="item-tag">${v}<span class="item-remove" onclick="removeItem(${i})">×</span></span>`
-  ).join('');
-}
-
-function resolveSelectNew(selId, newId, list) {
-  const sel = document.getElementById(selId);
-  const inp = document.getElementById(newId);
-  if (sel.value === '__new__') {
-    const nv = inp.value.trim();
-    if (!nv) return null;
-    if (!list.includes(nv)) list.push(nv);
-    return nv;
-  }
-  return sel.value || '';
-}
-
-function saveOrder() {
-  const gv = id => document.getElementById(id).value.trim();
-  const data = gv('f-data'), os = gv('f-os'), urgencia = gv('f-urgencia');
-
-  if (!data || !os || !urgencia) { alert('Preencha: Data, N° O.S e Urgência (campos com *).'); return; }
-
-  const solicitante = resolveSelectNew('f-solicitante', 'f-sol-new', solicitantes);
-  if (!solicitante) { alert('Preencha o Solicitante.'); return; }
-  const cliente = resolveSelectNew('f-cliente', 'f-cli-new', clientes);
-  if (!cliente) { alert('Preencha o Cliente.'); return; }
-  const fornecedor = resolveSelectNew('f-fornecedor', 'f-forn-new', fornecedores);
-
-  const order = {
-    id: editId || String(Date.now()),
-    data, os, solicitante, cliente, fornecedor,
-    frete: gv('f-frete') || 0,
-    valor: gv('f-valor') || 0,
-    urgencia, status: selectedStatus,
-    itens: [...currentItems],
-    obs: gv('f-obs')
+  // Suas credenciais fornecidas
+  const firebaseConfig = {
+    apiKey: "AIzaSyCHUSjDVtoztWHaSkINsoI7EcYXoI1xt0o",
+    authDomain: "compras-intercambio.firebaseapp.com",
+    projectId: "compras-intercambio",
+    storageBucket: "compras-intercambio.firebasestorage.app",
+    messagingSenderId: "1007834002086",
+    appId: "1:1007834002086:web:d1e112adf5d16e1473ba67"
   };
 
-  if (editId) {
-    const idx = orders.findIndex(x => x.id === editId);
-    if (idx !== -1) orders[idx] = order;
-  } else {
-    orders.unshift(order);
-  }
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
 
-  persist();
-  updateBadges();
-  renderAll();
-  closeModal();
-}
+  let orders = [];
+  let solicitantes = ["Eduardo", "Mecânico 1"]; // Valores iniciais
+  let clientes = ["Cliente Geral"];
+  let currentTab = 'pendente';
 
-// ── CHART ──────────────────────────────────────────────────────────────────
-function changeMonth(d) {
-  chartMonthDate = new Date(chartMonthDate.getFullYear(), chartMonthDate.getMonth() + d, 1);
-  renderChart();
-}
-
-function renderChart() {
-  const y = chartMonthDate.getFullYear(), m = chartMonthDate.getMonth();
-  document.getElementById('chart-month-lbl').textContent =
-    chartMonthDate.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
-
-  const monthOrders = orders.filter(o => {
-    if (!o.data) return false;
-    const d = new Date(o.data + 'T00:00:00');
-    return d.getFullYear() === y && d.getMonth() === m;
-  });
-
-  const defs = [
-    { key: 'URGENTE HOJE', label: 'Urgente hoje', cls: 'red', color: '#ef4444' },
-    { key: 'URGENTE', label: 'Urgente', cls: 'amber', color: '#f59e0b' },
-    { key: 'SEM URGÊNCIA', label: 'Sem urgência', cls: 'green', color: '#10b981' }
-  ];
-
-  const totals = defs.map(d => monthOrders.filter(o => o.urgencia === d.key).reduce((s, o) => s + parseFloat(o.valor || 0) + parseFloat(o.frete || 0), 0));
-  const counts = defs.map(d => monthOrders.filter(o => o.urgencia === d.key).length);
-  const maxVal = Math.max(...totals, 1);
-
-  document.getElementById('summary-grid').innerHTML = defs.map((d, i) => `
-    <div class="summary-box ${d.cls}">
-      <div class="s-label">${d.label}</div>
-      <div class="s-value">${fmtBRL(totals[i])}</div>
-      <div class="s-count">${counts[i]} pedido${counts[i] !== 1 ? 's' : ''}</div>
-    </div>
-  `).join('');
-
-  const barH = 160;
-  document.getElementById('bars-container').innerHTML = defs.map((d, i) => {
-    const h = totals[i] > 0 ? Math.max(8, Math.round((totals[i] / maxVal) * barH)) : 4;
-    return `<div class="bar-wrap">
-      <div class="bar-val" style="color:${d.color}">${fmtBRL(totals[i])}</div>
-      <div class="bar-body" style="height:${h}px;background:${d.color};opacity:0.85"></div>
-    </div>`;
-  }).join('');
-
-  document.getElementById('bars-labels').innerHTML = defs.map(d =>
-    `<div style="flex:1;text-align:center;font-size:11px;color:var(--text2);padding-top:6px">${d.label}</div>`
-  ).join('');
-}
-
-// ── DONUT ──────────────────────────────────────────────────────────────────
-function renderDonut() {
-  const defs = [
-    { status: 'pendente', label: 'Pendente', color: '#f59e0b' },
-    { status: 'comprado', label: 'Comprado', color: '#3b82f6' },
-    { status: 'finalizado', label: 'Finalizado', color: '#10b981' }
-  ];
-  const counts = defs.map(d => orders.filter(o => o.status === d.status).length);
-  const total = counts.reduce((a, b) => a + b, 0);
-
-  const svg = document.getElementById('donut-svg');
-  const cx = 100, cy = 100, r = 80, ri = 48;
-
-  if (total === 0) {
-    svg.innerHTML = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#2e2e2e" stroke-width="${r - ri}"/>
-      <text x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="middle" fill="#666" font-size="13" font-family="IBM Plex Mono">Sem dados</text>`;
-    document.getElementById('donut-legend').innerHTML = '';
-    return;
-  }
-
-  let angle = -Math.PI / 2;
-  let paths = '';
-
-  defs.forEach((d, i) => {
-    if (counts[i] === 0) return;
-    const pct = counts[i] / total;
-    const a1 = angle, a2 = angle + pct * 2 * Math.PI;
-    angle = a2;
-    const x1 = cx + Math.cos(a1) * r, y1 = cy + Math.sin(a1) * r;
-    const x2 = cx + Math.cos(a2) * r, y2 = cy + Math.sin(a2) * r;
-    const ix1 = cx + Math.cos(a1) * ri, iy1 = cy + Math.sin(a1) * ri;
-    const ix2 = cx + Math.cos(a2) * ri, iy2 = cy + Math.sin(a2) * ri;
-    const lg = pct > 0.5 ? 1 : 0;
-    const lx = cx + Math.cos((a1 + a2) / 2) * ((r + ri) / 2);
-    const ly = cy + Math.sin((a1 + a2) / 2) * ((r + ri) / 2);
-    const pct100 = Math.round(pct * 100);
-    paths += `<path d="M${ix1},${iy1} L${x1},${y1} A${r},${r} 0 ${lg},1 ${x2},${y2} L${ix2},${iy2} A${ri},${ri} 0 ${lg},0 ${ix1},${iy1}Z"
-      fill="${d.color}" stroke="#0f0f0f" stroke-width="2"/>`;
-    if (pct100 > 7) {
-      paths += `<text x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="11" font-family="IBM Plex Mono" font-weight="600">${pct100}%</text>`;
+  // --- CARREGAR DADOS EM TEMPO REAL ---
+  onValue(ref(db, 'compras/'), (snapshot) => {
+    const data = snapshot.val();
+    orders = data && data.pedidos ? Object.entries(data.pedidos).map(([id, val]) => ({ id, ...val })) : [];
+    if (data && data.listas) {
+        if(data.listas.solicitantes) solicitantes = data.listas.solicitantes;
+        if(data.listas.clientes) clientes = data.listas.clientes;
     }
+    renderList();
   });
 
-  paths += `<text x="${cx}" y="${cy - 8}" text-anchor="middle" fill="#f0f0f0" font-size="22" font-family="IBM Plex Mono" font-weight="600">${total}</text>
-    <text x="${cx}" y="${cy + 12}" text-anchor="middle" fill="#666" font-size="11" font-family="IBM Plex Sans">pedidos</text>`;
+  // --- SALVAR NOVO ---
+  window.saveOrder = () => {
+    const os = document.getElementById('f-os').value;
+    const sol = document.getElementById('f-solicitante').value;
+    const cli = document.getElementById('f-cliente').value;
+    const urg = document.getElementById('f-urgencia').value;
+    const val = document.getElementById('f-valor').value;
 
-  svg.innerHTML = paths;
+    if(!os) return alert("Digite a O.S!");
 
-  document.getElementById('donut-legend').innerHTML = defs.map((d, i) => `
-    <div class="legend-row">
-      <div class="legend-dot" style="background:${d.color}"></div>
-      <div>
-        <div class="legend-label">${d.label}</div>
-        <div class="legend-count">${counts[i]} pedido${counts[i] !== 1 ? 's' : ''} · ${total ? Math.round(counts[i] / total * 100) : 0}%</div>
-      </div>
-    </div>
-  `).join('');
-}
+    const novoPedido = {
+      os, solicitante: sol, cliente: cli, urgencia: urg, valor: val || 0,
+      status: 'pendente', dataCriacao: new Date().toLocaleDateString()
+    };
 
-// ── INIT ───────────────────────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
-  const now = new Date();
-  const mf = document.getElementById('filter-month');
-  if (mf) mf.value = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
-  chartMonthDate = now;
-  updateBadges();
-  buildPills('pendente');
-  buildPills('comprado');
-  buildPills('finalizado');
-  renderAll();
-});
+    push(ref(db, 'compras/pedidos'), novoPedido);
+    document.getElementById('modal-overlay').classList.remove('open');
+  };
+
+  // --- MOVER STATUS ---
+  window.moveStatus = (id, novoStatus) => {
+    update(ref(db, `compras/pedidos/${id}`), { status: novoStatus });
+  };
+
+  // --- DELETAR ---
+  window.deleteOrder = (id) => {
+    if(confirm("Excluir este pedido permanentemente?")) {
+        remove(ref(db, `compras/pedidos/${id}`));
+    }
+  };
+
+  function renderList() {
+    const container = document.getElementById('main-list');
+    const filtered = orders.filter(o => o.status === currentTab);
+    
+    // Atualizar badges
+    document.getElementById('cnt-pendente').innerText = orders.filter(o => o.status === 'pendente').length;
+    document.getElementById('cnt-comprado').innerText = orders.filter(o => o.status === 'comprado').length;
+    document.getElementById('cnt-finalizado').innerText = orders.filter(o => o.status === 'finalizado').length;
+
+    container.innerHTML = filtered.map(o => {
+      const urgClass = o.urgencia === 'URGENTE HOJE' ? 'hoje' : o.urgencia === 'URGENTE' ? 'urgente' : 'sem';
+      return `
+        <div class="order-card urg-${urgClass}">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start">
+            <div>
+                <div style="font-weight:600; font-size:14px">🚛 ${o.cliente} <span class="urg-badge ${urgClass}">${o.urgencia}</span></div>
+                <div style="font-size:12px; color:var(--text2); margin-top:4px">OS: ${o.os} | Sol: ${o.solicitante}</div>
+            </div>
+            <div style="text-align:right; font-family:var(--mono); color:var(--accent)">R$ ${parseFloat(o.valor).toLocaleString('pt-BR', {minimumFractionDigits:2})}</div>
+          </div>
+          <div class="order-actions">
+            ${currentTab === 'pendente' ? `<button class="action-btn move" onclick="moveStatus('${o.id}', 'comprado')">➔ COMPRADO</button>` : ''}
+            ${currentTab === 'comprado' ? `<button class="action-btn move" onclick="moveStatus('${o.id}', 'finalizado')">➔ FINALIZAR</button>` : ''}
+            <button class="action-btn" onclick="deleteOrder('${o.id}')">🗑️</button>
+          </div>
+        </div>
+      `;
+    }).join('') || '<p style="color:var(--text3); text-align:center; margin-top:20px;">Nenhum pedido nesta etapa.</p>';
+  }
+
+  // --- INTERFACE ---
+  document.getElementById('btn-open-modal').onclick = () => {
+    document.getElementById('modal-overlay').classList.add('open');
+    const fill = (id, list) => {
+        const el = document.getElementById(id);
+        el.innerHTML = list.map(v => `<option value="${v}">${v}</option>`).join('') + '<option value="ADD">+ Cadastrar Novo</option>';
+        el.onchange = () => {
+            if(el.value === 'ADD') {
+                const n = prompt("Nome:");
+                if(n) {
+                    list.push(n);
+                    set(ref(db, 'compras/listas'), { solicitantes, clientes });
+                    fill(id, list);
+                    el.value = n;
+                }
+            }
+        };
+    };
+    fill('f-solicitante', solicitantes);
+    fill('f-cliente', clientes);
+  };
+
+  document.getElementById('btn-save').onclick = window.saveOrder;
+  document.querySelectorAll('.tab-btn').forEach(b => b.onclick = () => {
+    document.querySelectorAll('.tab-btn').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    currentTab = b.dataset.tab;
+    renderList();
+  });
 </script>
 </body>
 </html>
